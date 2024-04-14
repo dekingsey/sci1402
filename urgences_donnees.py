@@ -54,7 +54,7 @@ def charger_installations(cond={}, journal=None):
     installations_liste = [x for x in installations.find(cond)]
     df = pd.DataFrame.from_dict(installations_liste)
   except Exception as ex:
-    logstr(journal, f"Exception: {ex}")
+    logstr(journal, f"Exception lors du chargement des installations: {ex}")
   finally:
     if not db is None:
       db.client.close()
@@ -86,7 +86,7 @@ def charger_situations(cond={}, heures=None, max=False, journal=None):
     df = pd.DataFrame.from_dict(tout)
 
   except Exception as ex:
-    logstr(journal, f"Exception: {ex}")
+    logstr(journal, f"Exception lors du chargement des situations: {ex}")
   finally:
     db.client.close()
   return df
@@ -168,7 +168,7 @@ def ajouter_situations(df, situations, journal):
       logstr(journal, f"Erreur lors de la récupération de l'horodateur. {ex}")
 
   # vérifions si les données pour cette mise à jour existe déjà
-  # note: si des données prédites existent, ne pas en tenir compte - elles seront détruites avant l'insertion
+  # note: si des données prédites existent, ne pas en tenir compte - elles seront détruites suite à l'insertion
   #       (condition sur le niveau_prediction)
   if horodateur and situations.find_one({"horodateur":horodateur, "$or":[{"niveau_prediction":0},{"niveau_prediction":{"$exists":False}}]}):
     logstr(journal, f"Des données existent déjà pour {horodateur}")
@@ -209,7 +209,7 @@ def ajouter_situations(df, situations, journal):
             ajouter_installation(id_installation)
 
       except Exception as e:
-        logstr(journal, f'{donnee["No_permis_installation"]}')
+        logstr(journal, f'Traitement de {donnee["No_permis_installation"]}')
         logstr(journal, f"Données invalides. {e}")
         donnee = None
     situations.insert_many(documents)
@@ -224,13 +224,14 @@ def ajouter_situations(df, situations, journal):
   
   return 0
 
-# par souci de robustesse, un programme planifié est exécuté sur un serveur externe
+# par souci de robustesse et pour l'initialisation d'une base de données, un programme
+# un planifié est exécuté sur un serveur externe et garde les données en format csv
 # les données collectées par ce programme peuvent être insérées dans la base de données
 # en appelant cette fonction
 # les fichiers csv doivent se trouver dans le répertoire csv
 # il est possible de passer un filtre pour spécifier les fichiers à inclure
 def ajouter_situations_fichiers_csv(filtre=""):
-  dir_data = "../data/"
+  dir_data = "data"
   try:
     journal = ouvrir_journal("chargement_massif")
     db = ouvrir_mongodb()
@@ -253,6 +254,41 @@ def ajouter_situations_fichiers_csv(filtre=""):
   finally:
     db.client.close()
     journal.close()
+
+# fonction utilisée pour remplir les données manquantes lors de l'initialisation d'une nouvelle
+# base de données 
+# pendant 24 heures après l'initialisation, des données approximatives sont utilisées
+# après 24 heures d'utilisation, les données qui servent à remplacer les données manquantes 
+# sont les données prédites par le système
+def remplir_donnees():
+  db = urgences_donnees.ouvrir_mongodb()
+  col = db.get_collection("situations")
+  # seulement pour les dernières 24 heures
+  h = dt.now() - td(1)
+  h = dt(h.year,h.month,h.day,h.hour)
+  df = urgences_donnees.charger_situations({"horodateur":{"$gte":h}})
+
+  # utiliser la moyenne des données
+  df2 = df[["attente24","attente48","taux_occupation","rss","installation","civieres"]]
+  df2 = df2.groupby("installation").mean().reset_index()
+  situations = []
+  base_h = h
+  for _, i in urgences_donnees.charger_installations().iterrows():
+    h = base_h
+    while h < dt.now() + td(minutes=15):
+      # si les données n'existent pas,, utiliser la moyenne
+      if len(df[(df["installation"]==i.installation)&(df["horodateur"]==h)]) == 0:
+        sit = df2[(df2["installation"]==i.installation)].to_dict(orient="records")[0]
+        sit["jour_semaine"] = h.weekday()
+        sit["heure"] = h.hour
+        sit["horodateur"] = h
+        sit["rempli"] = 1
+        sit["niveau_prediction"] = 1
+        situations.append(sit)
+        print(sit)
+      h += td(hours=1)
+  print(situations)
+  col.insert_many(situations)
 
 # utiliser cette fonction pour extraire les données utilisées pour produire les prédictions
 # retourne un dictionnaire composé des éléments suivants pour chaque installation éligible:
@@ -327,6 +363,14 @@ def charger_historique_prediction(duree=24, journal=None):
     db.client.close()
 
 # fonction qui prépare les données dans le format nécessaire à entraîner le réseau de neurones
+# - x_h: pour les 24 dernières heures, le nombre de patients pour civière pour 24 et 48 heures 
+#        et le taux d'occupation de l'installation
+# - x: le moment de la journée (période de 3 heures au cours de la journée), le jour de la semaine
+#      la région sociosanitaire et le nombre de civières. Le nombre de civière est divisé par 100
+#      pour être entre 0 et 1. Les autres données sont "catégorisées", c'est à dire transformées en
+#      vecteurs d'une longueur égale au nombre de  valeurs possibles où chaque valeur est
+#      représentée par un 1 ou un 0
+# - y: le taux d'occupation réel à déterminer, autrement dit, la cible utilisée lors de l'entraînement
 def charger_historique(cond={}, duree=24, journal=None):
   df = charger_situations(cond, journal=journal)
   df_i = charger_installations(journal=journal)

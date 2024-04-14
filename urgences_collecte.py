@@ -75,7 +75,7 @@ def demarrer_boucle_collecte():
         batir_carte(journal)
       time.sleep(600)
   except Exception as ex:
-    logstr(journal, f"Exception lors du chargement {ex}")
+    logstr(journal, f"Exception lors de la collecte des données {ex}")
     if journal:
       journal.close()
 
