@@ -76,13 +76,6 @@ def batir_carte(journal=None):
   except Exception as ex:
     logstr(journal, f"Exception lors de la création de la carte: {ex}")
   
-# fonction utilitaire qui affiche la carte, appelée par le menu
-def afficher_carte():
-  # import directement dans la fonction pour éviter les erreurs de 
-  # requis sur un serveur qui n'aurait pas la librairie
-  import webbrowser
-  webbrowser.open(os.path.join(os.getcwd(), "carte/carte_quebec.html"))
-
 if __name__ == "__main__":
   batir_carte()
   

@@ -10,7 +10,6 @@ def afficher_menu():
   print("1) Charger les fichiers CSV du répertoire data")
   print("2) Entraîner modèle")
   print("3) Démarrer la boucle de lecture")
-  print("4) Afficher la denière carte")
   print("x) Sortie")
 
 def main():
@@ -30,8 +29,6 @@ def main():
       print("Un fichier .keras et un fichier .echelle ont été créés. Remplacer modele.keras et modele.echelle par ces fichiers pour utiliser le nouveau modele.")
     elif choix == "3":
       demarrer_boucle_collecte()
-    elif choix == "4":
-      afficher_carte()
     elif choix.lower() == "x":
       print("Au revoir!")
       break
