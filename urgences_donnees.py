@@ -213,11 +213,13 @@ def ajouter_situations(df, situations, journal):
         logstr(journal, f"Données invalides. {e}")
         donnee = None
     situations.insert_many(documents)
-    # destruction des données prédite pour chaque installation pour laquelle ont été insérées
+    # destruction des données prédites pour chaque installation pour laquelle ont été insérées
     # des données réelles
     predictions_a_detruire = [{"installation":x["installation"]} for x in documents]
     situations.delete_many({"horodateur":horodateur, "$or":predictions_a_detruire, "niveau_prediction":{"$ne":0}})
-    
+    # lorsque de nouvelles données réelles sont ajoutées, détruire les prédictions futures
+    situations.delete_many({"horodateur":{"$gt": horodateur}})
+
     return len(predictions_a_detruire)
   
   return 0

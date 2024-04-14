@@ -34,10 +34,11 @@ def batir_carte(df=None):
   df["couleur"] = df["taux_occupation"].apply(
     lambda x: couleurs[min(int(x/PAS_ECHELLE), len(couleurs) -1)]
     )
-  #### todo ajouter heure prédiction
-  df["texte"] = (df["installation_nom"] + "<br>" +
-                 round(df["taux_occupation"]*100, 2).astype(str) + "<br>" +
-                 df["adresse"] + "<br>")
+
+  heure_pred = df.horodateur.apply(lambda x: x.strftime("%H:%M"))
+  df["texte"] = (df.installation_nom + "<br>" +
+                 df["adresse"] + "<br>" +
+                 "Taux occupation prévu: " + round(df.taux_occupation*100, 2).astype(str) + "% à " + heure_pred + "<br>" )
 
   fig = go.Figure()
   for couleur,legende in zip(couleurs,legende_couleurs):
@@ -68,7 +69,7 @@ def afficher_carte():
   import webbrowser
   df = charger_installations()
   batir_carte()
-  webbrowser.open("carte/carte_quebec.html")
+  webbrowser.open(os.path.join(os.getcwd(), "carte/carte_quebec.html"))
 
 
 
