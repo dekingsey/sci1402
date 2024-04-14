@@ -217,6 +217,10 @@ def ajouter_situations(df, situations, journal):
     # des données réelles
     predictions_a_detruire = [{"installation":x["installation"]} for x in documents]
     situations.delete_many({"horodateur":horodateur, "$or":predictions_a_detruire, "niveau_prediction":{"$ne":0}})
+    
+    return len(predictions_a_detruire)
+  
+  return 0
 
 # par souci de robustesse, un programme planifié est exécuté sur un serveur externe
 # les données collectées par ce programme peuvent être insérées dans la base de données
@@ -268,8 +272,10 @@ def charger_historique_prediction(duree=24, journal=None):
   # chercher date maximale
   dt_max = lire_heure_max(col)
 
-  # si la date est déjà dans le futur de plus de 30 minutes, c'est une prédiction
-  if (dt_max > dt.now() + td(minutes=30)):
+  # si nous n'avons pas de données réelles disponibles et que les
+  # données prédites encore valides pour 15 minutes
+  if (not col.find_one({"horodateur": dt_max, "niveau_prediction": 0}) and
+      dt_max > dt.now() + td(minutes=15)):
     logstr(journal, f"Des prédictions existent déjà pour {dt_max}")
     return None
 
