@@ -7,6 +7,7 @@ import os
 def logstr(f,s):
   if f:
     f.write(f"{s}\n")
+    f.flush()
   print(s)
 
 # ouverture du fichier journal dans le répertoire logs
