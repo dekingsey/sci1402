@@ -116,7 +116,7 @@ def ajouter_installation(id_installation, journal=None):
           if ("INSTAL_COD" in rec and
               rec["INSTAL_COD"].isnumeric and
               int(rec["INSTAL_COD"]) == id_installation):
-            logstr(journal, f"Ajout de l'installation {id_installation}")
+            logstr(journal, f"INFORMATION - Ajout de l'installation {id_installation}")
             installation = {
                             "installation": int(id_installation),
                             "installation_nom": rec["INSTAL_NOM"],
@@ -171,7 +171,7 @@ def ajouter_situations(df, situations, journal):
   # note: si des données prédites existent, ne pas en tenir compte - elles seront détruites suite à l'insertion
   #       (condition sur le niveau_prediction)
   if horodateur and situations.find_one({"horodateur":horodateur, "$or":[{"niveau_prediction":0},{"niveau_prediction":{"$exists":False}}]}):
-    logstr(journal, f"Des données existent déjà pour {horodateur}")
+    logstr(journal, f"INFORMATION - Des données existent déjà pour {horodateur}")
   elif horodateur:
     # nous accumulons les documents à insérer dans une liste qui est insérée à la fin
     # par souci de performance
@@ -210,7 +210,7 @@ def ajouter_situations(df, situations, journal):
 
       except Exception as e:
         logstr(journal, f'Traitement de {donnee["No_permis_installation"]}')
-        logstr(journal, f"Données invalides. {e}")
+        logstr(journal, f"INFORMATION - Données invalides. {e}")
         donnee = None
     situations.insert_many(documents)
     # destruction des données prédites pour chaque installation pour laquelle ont été insérées
