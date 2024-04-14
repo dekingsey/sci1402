@@ -1,5 +1,6 @@
 import requests
 from urgences_utils import *
+from urgences_carte import *
 from urgences_donnees import *
 from urgences_rnn import *
 import pandas as pd
@@ -46,6 +47,7 @@ def ajouter_prediction(journal=None):
   situations = []
   if col.find_one({"horodateur":horodateur}):
     logstr(journal, f"Il y a déjà des prédictions pour {horodateur}")
+    return False
   else:
     for installation, pred in zip(histo["installations"], preds):
       # ne pas conserver le _id lors de l'insertion
@@ -68,7 +70,9 @@ def demarrer_boucle_collecte():
     journal = ouvrir_journal("collecte")
     while True:
       collecter_situations(journal)
-      ajouter_prediction(journal)
+      # batir carte seulement si les prédictions ont changé
+      if ajouter_prediction(journal):
+        batir_carte(journal)
       time.sleep(600)
   except Exception as ex:
     logstr(journal, f"Exception lors du chargement {ex}")
