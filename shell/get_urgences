@@ -1,0 +1,10 @@
+wget https://www.msss.gouv.qc.ca/professionnels/statistiques/documents/urgences/Releve_horaire_urgences_7jours_nbpers.csv -a $SCI1402/logs/urgences-dtl-csv.log -O $SCI1402/data/urgences_dtl$($SCI1402/shell/ts).csv
+$SCI1402/data/doublons >> $SCI1402/logs/urgences-dtl-csv.log 2>&1
+cd $SCI1402/data
+# si des changements sont en attente... ils attendront!
+git reset
+git add .
+cd $SCI1402/carte
+git add .
+git commit -m "Ajout automatisé (data/carte)"
+git push
