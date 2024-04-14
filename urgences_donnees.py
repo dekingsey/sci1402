@@ -270,59 +270,63 @@ def ajouter_situations_fichiers_csv(filtre=""):
 def charger_historique_prediction(duree=24, journal=None):
   db = ouvrir_mongodb()
   col = db.get_collection("situations")
-  
-  # chercher date maximale
-  dt_max = lire_heure_max(col)
+  try:
+    # chercher date maximale
+    dt_max = lire_heure_max(col)
 
-  # si nous n'avons pas de données réelles disponibles et que les
-  # données prédites encore valides pour 15 minutes
-  if (not col.find_one({"horodateur": dt_max, "niveau_prediction": 0}) and
-      dt_max > dt.now() + td(minutes=15)):
-    logstr(journal, f"Des prédictions existent déjà pour {dt_max}")
-    return None
+    # si nous n'avons pas de données réelles disponibles et que les
+    # données prédites encore valides pour 15 minutes
+    if (not col.find_one({"horodateur": dt_max, "niveau_prediction": 0}) and
+        dt_max > dt.now() + td(minutes=15)):
+      logstr(journal, f"Des prédictions existent déjà pour {dt_max}")
+      return None
 
-  # aller chercher 24 heures au total, donc date - 23
-  dt_min = dt_max - td(hours=(duree-1))
-  df = charger_situations({"horodateur":{"$gte":dt_min}}, journal=journal)
+    # aller chercher 24 heures au total, donc date - 23
+    dt_min = dt_max - td(hours=(duree-1))
+    df = charger_situations({"horodateur":{"$gte":dt_min}}, journal=journal)
 
-  # trier par installations et par date afin de bâtir les données temporelles
-  df = df.sort_values(by=["installation","horodateur"])
-  x_h = []
-  x = []
-  y = []
-  installations = []
-  donnees_h = []
+    # trier par installations et par date afin de bâtir les données temporelles
+    df = df.sort_values(by=["installation","horodateur"])
+    x_h = []
+    x = []
+    y = []
+    installations = []
+    donnees_h = []
 
-  precedent_inst = None
-  for _, rec in df.iterrows():
-    inst = rec.installation
-    if precedent_inst is not None and precedent_inst != inst:
-      logstr(journal, f"ERREUR: l'installation {precedent_inst} n'a que {len(donnees_h)} données.")
-      donnees_h = []
-    
-    donnees_h.append(np.asarray([rec.attente24, rec.attente48, rec.taux_occupation]))
-    if len(donnees_h) == duree:
-      x_h.append(np.asarray(donnees_h))
-      x.append(np.concatenate((
-        en_categorie(int(rec.heure/3), 0, 7),
-        en_categorie(rec.jour_semaine, 0, 6),
-        # présentement on a entre 1 et 16 mais prévoyons un peu d'espace
-        en_categorie(rec.rss, 0, 20),
-        # ici je prévois un max de 100 civières, présentement 54, et je normalise d'avance
-        (rec.civieres/100.0,)
-        )))
-      installations.append(rec.to_dict())
-      donnees_h = []
-      inst = None
-    precedent_inst = inst
+    precedent_inst = None
+    for _, rec in df.iterrows():
+      inst = rec.installation
+      if precedent_inst is not None and precedent_inst != inst:
+        logstr(journal, f"ERREUR: l'installation {precedent_inst} n'a que {len(donnees_h)} données.")
+        donnees_h = []
+      
+      donnees_h.append(np.asarray([rec.attente24, rec.attente48, rec.taux_occupation]))
+      if len(donnees_h) == duree:
+        x_h.append(np.asarray(donnees_h))
+        x.append(np.concatenate((
+          en_categorie(int(rec.heure/3), 0, 7),
+          en_categorie(rec.jour_semaine, 0, 6),
+          # présentement on a entre 1 et 16 mais prévoyons un peu d'espace
+          en_categorie(rec.rss, 0, 20),
+          # ici je prévois un max de 100 civières, présentement 54, et je normalise d'avance
+          (rec.civieres/100.0,)
+          )))
+        installations.append(rec.to_dict())
+        donnees_h = []
+        inst = None
+      precedent_inst = inst
 
-  return {"x_h": x_h, 
-          "x": x, 
-          "installations": installations,
-          "date": dt_max}
+    return {"x_h": x_h, 
+            "x": x, 
+            "installations": installations,
+            "date": dt_max}
 
-# fonction très semblable à la précédente mais utilisée pour la construction du modèle
-# si le temps le permet, réutiliser le code plutôt que d'avoir deux fonctions semblables
+  except Exception as ex:
+    logstr(journal, f"Erreur en chargeant les données nécessaires à la prédiction: {ex}")
+  finally:
+    db.client.close()
+
+# fonction qui prépare les données dans le format nécessaire à entraîner le réseau de neurones
 def charger_historique(cond={}, duree=24, journal=None):
   df = charger_situations(cond, journal=journal)
   df_i = charger_installations(journal=journal)
@@ -337,9 +341,7 @@ def charger_historique(cond={}, duree=24, journal=None):
     dt_cur = dt_min
     while dt_cur < dt_max:
       sous_df = ((df.installation == i.installation) & (df.horodateur==dt_cur))
-      # i = df_i[df_i.installation==51218352]
-      # d = 19
-      # h = 20
+
       # combien de rangées?
       # - 0, on recommence, pas assez d'historique...
       # - >1, pas bon du tout, il y a des données en double!
@@ -350,7 +352,6 @@ def charger_historique(cond={}, duree=24, journal=None):
       else:
         donnees_h.append(np.asarray(df.loc[sous_df, ["attente24","attente48","taux_occupation"]])[0])
         if len(donnees_h) > duree:
-          # print(f"{i.installation},{d},{h}")
           # si on atteint duree, garder les données dans le df ...
           x_h.append(np.asarray(donnees_h[:-1]))
           x.append(np.concatenate((
@@ -367,8 +368,3 @@ def charger_historique(cond={}, duree=24, journal=None):
       dt_cur += td(hours=1)
   return {"x_h": x_h, "x": x, "y": y}
 
-def reset(heure):
-  db = ouvrir_mongodb()
-  col = db.get_collection("situations")
-  n = dt.now()
-  print(col.delete_many({"horodateur":{"$gte":dt(n.year, n.month, n.day, heure)}}))
