@@ -1,0 +1,17 @@
+f2=""
+echo $(dirname $0)
+cd $(dirname $0)
+ls|while read f; do
+  if [ -f $f ]; then
+    if [ "$f2" != "" ]; then
+      if diff $f2 $f>/dev/null; then
+        echo "Les fichiers $f et $f2 sont identiques. rm $f"
+        rm $f
+        f=$f2
+      else
+        f2=$f
+      fi
+    fi
+    f2=$f
+  fi
+done
