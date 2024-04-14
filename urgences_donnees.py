@@ -210,7 +210,7 @@ def ajouter_situations(df, situations, journal):
 
       except Exception as e:
         logstr(journal, f'Traitement de {donnee["No_permis_installation"]}')
-        logstr(journal, f"INFORMATION - Données invalides. {e}")
+        logstr(journal, f"INFORMATION - Données ignorées. {e}")
         donnee = None
     situations.insert_many(documents)
     # destruction des données prédites pour chaque installation pour laquelle ont été insérées
@@ -237,7 +237,9 @@ def ajouter_situations_fichiers_csv(filtre=""):
     db = ouvrir_mongodb()
     situations = db.get_collection("situations")
 
-    for nom_fichier in os.listdir(dir_data):
+    tous_fichiers = os.listdir(dir_data)
+    tous_fichiers.sort()
+    for nom_fichier in tous_fichiers:
       # ne traiter que les fichiers inclus dans le filtre
       if nom_fichier.find(filtre) < 0:
         continue
@@ -261,19 +263,19 @@ def ajouter_situations_fichiers_csv(filtre=""):
 # après 24 heures d'utilisation, les données qui servent à remplacer les données manquantes 
 # sont les données prédites par le système
 def remplir_donnees():
-  db = urgences_donnees.ouvrir_mongodb()
+  db = ouvrir_mongodb()
   col = db.get_collection("situations")
   # seulement pour les dernières 24 heures
   h = dt.now() - td(1)
   h = dt(h.year,h.month,h.day,h.hour)
-  df = urgences_donnees.charger_situations({"horodateur":{"$gte":h}})
+  df = charger_situations({"horodateur":{"$gte":h}})
 
   # utiliser la moyenne des données
   df2 = df[["attente24","attente48","taux_occupation","rss","installation","civieres"]]
   df2 = df2.groupby("installation").mean().reset_index()
   situations = []
   base_h = h
-  for _, i in urgences_donnees.charger_installations().iterrows():
+  for _, i in charger_installations().iterrows():
     h = base_h
     while h < dt.now() + td(minutes=15):
       # si les données n'existent pas,, utiliser la moyenne
