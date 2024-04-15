@@ -35,8 +35,7 @@ def batir_modele(xh_shape, x_shape):
   
 
 def entrainer_modele():
-  # docu = charger_historique({})
-  docu = charger_historique({"horodateur":{"$gte": dt(2024,3,1), "$lt": dt(2024,4,1)}})
+  docu = charger_historique({})
   x_h = np.asarray(docu["x_h"])
   # réduire x_h, au besoin pour les tests, si on veut diminuer le nombre de pas de temps
   # x_h = np.asarray([xxhh[12:] for xxhh in x_h])
