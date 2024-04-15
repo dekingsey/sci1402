@@ -1,7 +1,6 @@
 from keras.models import Model
 from keras.layers import (Input, LSTM, Dense, concatenate)
 from sklearn.model_selection import train_test_split
-from matplotlib import pyplot
 from datetime import datetime as dt
 from keras.saving import load_model
 import pickle
