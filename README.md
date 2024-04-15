@@ -2,6 +2,10 @@
 Dépôt pour projet en science des données dans le cadre du cours SCI-1402
 ## Objectif
 Ce projet a comme objectif la production d'une carte interactive présentant des prédictions des taux d’occupation aux urgences de différentes installations de santé sur le territoire du Québec.
+## Résultats
+La [carte interactive des projections de taux d’occupation aux urgences](https://github.com/dekingsey/sci1402/blob/main/carte/carte_quebec.html) est disponible directement sur GitHub. La carte ne peut être affichée directement dans la plateforme et doit être téléchargée pour être consultée.
+## Uilisation
+-----------------------------------
 ## Source des données
 Les données utilisées dans le modèle sont le [Fichier horaire des données de la situation à l’urgence](https://www.donneesquebec.ca/recherche/dataset/fichier-horaire-des-donnees-de-la-situation-a-l-urgence) et les [Fichiers cartographiques M02 des installations et établissements](https://www.donneesquebec.ca/recherche/dataset/fichiers-cartographiques-m02-des-installations-et-etablissements) provenant du site de [Données Québec](https://donneesquebec.ca),
 ##  Fonctionnement
@@ -16,8 +20,8 @@ Le répertoire **data** contient des fichiers csv téléchargés de façon horai
 Le répertoire **modele** contient, dans le fichier modele.keras, une sauvegarde du modèle combiné LSTM utilisé pour produire les prédicitons et, dans le fichier modele.echelle, les échelles qui doivent être utilisées pour transformer les données produites par le modèle en données qui pourront être utilisées.
 ### Répertoire script
 Le répertoire **script** contient un script bash **get_urgences** qui est utilisé sur un serveur pour collecter les fichiers csv contenus dans le répertoire **data**. Ce script est aussi en charge de mettre à jour les données du répertoire **data** et du répertoire **carte** sur GitHub. Il ne devrait être utilisé que sur notre serveur principal et n’est fourni ici qu’en guise de référence.
-### Fichier python
-- 
+### Fichiers python
+Les fichiers .py dans la racine du projet représentent le cœur du projet. Le fichier **urgences_menu.py** peut être lancé pour exécuter les différentes tâches d’initialisation et de fonctionnement en continu du projet.
 ## Éléments requis
 Une base de données MongoDB. La variable environnementale `MONGO_URI` doit contenir la chaîne de connexion pour cette base de données. 
 ### Librairies requises
