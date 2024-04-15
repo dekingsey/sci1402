@@ -382,7 +382,7 @@ def charger_historique(cond={}, duree=24, journal=None):
   x = []
   y = []
   for _, i in df_i.iterrows():
-    print(i.installation)
+    logstr(journal, f"Traitement de l'installation {i.installation}")
     donnees_h = []
     dt_cur = dt_min
     while dt_cur < dt_max:
