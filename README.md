@@ -1,4 +1,4 @@
-# SCI-1402  - Projet final
+# SCI-1402  - Projet en science des données
 Dépôt pour projet en science des données dans le cadre du cours SCI-1402
 
 ## Objectif
