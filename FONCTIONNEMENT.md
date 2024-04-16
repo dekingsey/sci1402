@@ -3,6 +3,8 @@
 ## Collecte des données
 Les données sont récoltées de façon horaire à partir du site de Données Québec, épurées et stockées dans une base de données MongoDB sur la plateforme Atlas.
 
+Les données sont stockées dans deux collections: `situations` qui contient les données horaires pour chaque installation, et `installations` qui contient les données des différentes installations.
+
 ## Production de données prédites
 Un modèle  combiné utilisant la librairie keras est entraîné à l’aide de ces données. Le modèle choisi est un réseau de neurones LSTM profond dont le résultat est combiné à des données non-temporelles pour être traité par trois couches de neurones Dense produisant un prédiction des taux d'occupation:
 ![Réseau de neurones](/ressources/RNA.png)
