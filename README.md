@@ -20,7 +20,7 @@ Suite à l'acquisition de nouvelles données ou lorsque les prédictions ne sont
 ![Réseau de neurones](/ressources/carte.png)
 
 ### Résultat
-La [carte interactive des projections de taux d’occupation aux urgences](https://github.com/dekingsey/sci1402/blob/main/carte/carte_quebec.html) produite par ce projet est disponible dans ce répertoire GitHub et mise à jour en temps réel de façon horaire.
+La [carte interactive des projections de taux d’occupation aux urgences](https://github.com/dekingsey/sci1402/blob/main/carte/carte_quebec.html) produite par ce projet est disponible directement à partir de ce dépôt GitHub et est mise à jour en temps réel de façon horaire.
 
 ### Source des données
 Les données utilisées dans le modèle sont le [Fichier horaire des données de la situation à l’urgence](https://www.donneesquebec.ca/recherche/dataset/fichier-horaire-des-donnees-de-la-situation-a-l-urgence) et les [Fichiers cartographiques M02 des installations et établissements](https://www.donneesquebec.ca/recherche/dataset/fichiers-cartographiques-m02-des-installations-et-etablissements) provenant du site de [Données Québec](https://donneesquebec.ca),
@@ -46,10 +46,10 @@ Les fichiers .py dans la racine du projet représentent le cœur du projet. Le f
 Une base de données MongoDB. La variable environnementale `MONGO_URI` doit contenir la chaîne de connexion pour cette base de données. 
 ### Librairies requises
 Les libraires suivantes sont requises pour ce projet :
-- pymongo
-- keras
-- pickle
-- pandas
-- plotly
+- `pymongo`
+- `keras`
+- `pickle`
+- `pandas`
+- `plotly`
 
 
