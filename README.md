@@ -16,7 +16,7 @@ Cible à battre: 0.00213267531385084
 Score: 0.0020986351166595576
 ```
 
-Suite à l'acquisition de nouvelles données ou lorsque les prédictions ne sont valides que pour 15 minutes ou moins, des prédicitons sont faites en utilisant ce modèle et stockée dans la base de données. Par la suite une carte des installations affichant ces prédictions est produite en utilisant la librairie pyplot.graph_objects:
+Suite à l'acquisition de nouvelles données ou lorsque les prédictions ne sont valides que pour 15 minutes ou moins, des prédicitons sont faites en utilisant ce modèle et stockée dans la base de données. Par la suite une carte des installations affichant ces prédictions est produite en utilisant la librairie `pyplot.graph_objects`:
 ![Réseau de neurones](/ressources/carte.png)
 
 ### Résultat
