@@ -9,7 +9,10 @@ La [carte interactive des projections de taux d’occupation aux urgences](https
 ## Source des données
 Les données utilisées dans le modèle sont le [Fichier horaire des données de la situation à l’urgence](https://www.donneesquebec.ca/recherche/dataset/fichier-horaire-des-donnees-de-la-situation-a-l-urgence) et les [Fichiers cartographiques M02 des installations et établissements](https://www.donneesquebec.ca/recherche/dataset/fichiers-cartographiques-m02-des-installations-et-etablissements) provenant du site de [Données Québec](https://donneesquebec.ca),
 ##  Fonctionnement
-Les données sont récoltées de façon horaire et stockées dans une base de données MongoDB sur la plateforme Atlas. Un modèle LSTM combiné utilisant la librairie keras est entraîné à l’aide de ces données. Des prédictions des taux d’occupation sont faites par ce modèle puis une carte des installations affichant ces prédictions est produite en utilisant la librairie pyplot.graph_objects.
+Les données sont récoltées de façon horaire et stockées sur le site de Données Québec et sont stockées dans une base de données MongoDB sur la plateforme Atlas.
+![Réseau de neurones](https://github.com/dekingsey/sci1402/blob/main/carte/carte_quebec.html)
+Un modèle LSTM combiné utilisant la librairie keras est entraîné à l’aide de ces données. Des prédictions des taux d’occupation sont faites par ce modèle puis une carte des installations affichant ces prédictions est produite en utilisant la librairie pyplot.graph_objects.
+
 ## Composantes
 ### Répertoire carte
 Le répertoire `carte` contient le résultat du projet, soit la [carte interactive des projections de taux d’occupation aux urgences](https://github.com/dekingsey/sci1402/blob/main/carte/carte_quebec.html), soit la carte affichant des prédictions. Notons que GitHub n’affiche pas ce fichier directement dans la plateforme en raison de sa taille et qu’il doit être téléchargé pour être consulté.
