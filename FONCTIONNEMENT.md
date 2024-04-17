@@ -1,7 +1,7 @@
 #  Fonctionnement
 
 ## Collecte des données
-Les données sont récoltées de façon horaire à partir du site de Données Québec, épurées et stockées dans une base de données MongoDB sur la plateforme Atlas.
+Les données sont collectées de façon horaire à partir du site de Données Québec, épurées et stockées dans une base de données MongoDB sur la plateforme Atlas.
 
 Les données sont stockées dans deux collections: `situations` qui contient les données horaires pour chaque installation, et `installations` qui contient les données des différentes installations.
 
