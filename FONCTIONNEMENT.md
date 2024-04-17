@@ -36,7 +36,9 @@ Les libraires suivantes sont requises pour ce projet :
 ### Première utilisation
 
 Après avoir défini la variable environnementale `MONGO_URI`, installé les librairies requises et téléchargé l'entièreté du projet, lancer `urgences_menu.py`. Le menu suivant sera affiché:
+
 ![Menu](ressources/menu.png)
+
 Appliquer les étapes suivantes:
  - Utiliser l'option `1` pour créer la base de données initiale. Si le projet est arrêté pour une période, cette étape permet aussi de mettre à niveau la base de données avec de nouveaux fichiers CSV.
  - Ensuite, utiliser l'option `2` pour regénérer le modèle de réseau de neurones. Le fichiers générés devront remplacer les fichiers `modele/modele.keras` et `modele/modele.echelle`.
