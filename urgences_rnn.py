@@ -59,8 +59,8 @@ def entrainer_modele():
   with open(f"modele/modele_{base_nf}.txt", "w") as f:
     model.summary(print_fn=lambda x: f.write(x + "\n"))
     logstr(f, f"Couches: {pam_couches}. Epochs: {pam_epochs}\n")
-    logstr(f, f"Cible à battre: {np.mean([pow(xxhh[xxhh.shape[0]-1,2]-yy,2) for xxhh, yy in zip(x_h,y)])}\n")
-    logstr(f, f"Score: {np.mean([pow(yt - yp,2) for yt, yp in zip(y_test, y_predict)])}\n")
+    logstr(f, f"Cible à battre (MSE): {np.mean([pow(xxhh[xxhh.shape[0]-1,2]-yy,2) for xxhh, yy in zip(x_h,y)])}\n")
+    logstr(f, f"Performance (MSE): {np.mean([pow(yt - yp,2) for yt, yp in zip(y_test, y_predict)])}\n")
     logstr(f, f"Shapes: {x_h.shape} - {x.shape}")
     logstr(f, f"Echelle: {echelle}")
   model.save(f"modele/modele_{base_nf}.keras")
