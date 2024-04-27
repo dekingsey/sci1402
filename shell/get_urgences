@@ -9,5 +9,7 @@ git reset
 git add .
 cd $SCI1402/carte
 git add .
-git commit -m "Ajout automatisé (data/carte)"
+cd $SCI1402/graphiques
+git add .
+git commit -m "Ajout automatisé (data/carte/graphiques)"
 git push

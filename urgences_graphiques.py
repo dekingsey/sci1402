@@ -21,7 +21,9 @@ for _, i in dfi.iterrows():
   plt.legend(loc='center left')
 
   n = i.installation_nom
-  n = n.replace("CENTRE MULTISERVICES DE SANTÉ ET DE SERVICES SOCIAUX", "CSSS")
+  n = n.replace("CENTRE MULTISERVICES DE SANTÉ ET DE SERVICES SOCIAUX", "CENTRE MULTISERVICES")
+  n = n.replace("L'HÔPITAL", "HÔPITAL")
+  n = n.replace("L'HÔTEL", "HÔTEL")
   plt.title(n, fontsize=11)  
   plt.suptitle(f"Situation à l'urgence ({dt.now().strftime('%d/%m/%Y')})")
   plt.xlabel("Heure du jour")  # Titre de l'axe x
