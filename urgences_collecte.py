@@ -40,6 +40,8 @@ def ajouter_prediction(journal=None):
   preds = predire(histo)
   db = ouvrir_mongodb()
   col = db.get_collection("situations")
+  # ajout d'une collection pour les predictions seulement
+  col_preds = db.get_collection("predictions")
   horodateur = histo["date"] + td(hours=1)
   base = {"horodateur":  horodateur,
           "jour_semaine": horodateur.weekday(),
@@ -62,6 +64,7 @@ def ajouter_prediction(journal=None):
       situations.append(situation)
     
     col.insert_many(situations)
+    col_preds.insert_many(situations)
   return True
 
 def demarrer_boucle_collecte():

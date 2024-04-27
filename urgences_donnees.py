@@ -91,6 +91,23 @@ def charger_situations(cond={}, heures=None, max=False, journal=None):
     db.client.close()
   return df
 
+def charger_predictions(heures=None, journal=None):
+  df = None
+  try:
+    db = ouvrir_mongodb()
+    predictions = db.get_collection("predictions")
+
+    cond = {"horodateur": {"$gte": dt.now() - td(hours=heures)}}
+
+    tout = [elem for elem in predictions.find(cond)]
+    df = pd.DataFrame.from_dict(tout)
+
+  except Exception as ex:
+    logstr(journal, f"Exception lors du chargement des predicitons: {ex}")
+  finally:
+    db.client.close()
+  return df
+
 # ajout d'une installation par son id - l'installation est lue sur le site
 # de donneesquebec.ca
 def ajouter_installation(id_installation, journal=None):
