@@ -23,11 +23,14 @@ def main():
 
     if choix == "1":
       ajouter_situations_fichiers_csv()
-      remplir_donnees()
     elif choix == "2":
       entrainer_modele()
       print("Un fichier .keras et un fichier .echelle ont été créés. Remplacer modele.keras et modele.echelle par ces fichiers pour utiliser le nouveau modele.")
     elif choix == "3":
+      # si les données comportent des données manquantes, utiliser la moyenne
+      # pendant les 24 premières heures, ces données ajustées seront utilisées
+      # après 24 heures, les prédictions seront utilisées
+      remplir_donnees()
       demarrer_boucle_collecte()
     elif choix.lower() == "x":
       print("Au revoir!")
