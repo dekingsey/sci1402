@@ -5,7 +5,7 @@ Dépôt pour projet en science des données dans le cadre du cours SCI-1402
 Ce projet a comme objectif la production d'une carte interactive présentant des prédictions des taux d’occupation aux urgences de différentes installations de santé sur le territoire du Québec.
 
 ## Fonctionnement
-Pour plus de détails sur le fonctionnement et l'utilisation du projet, consultez [INSTALLATION.md](/INSTALLATION.md).
+Pour plus de détails sur le fonctionnement et l'utilisation du projet, consultez [INSTALLATION.md](/FONCTIONNEMENT.md).
 
 ## Résultat
 La [carte interactive des projections de taux d’occupation aux urgences](https://github.com/dekingsey/sci1402/blob/main/carte/carte_quebec.html) produite par ce projet est disponible directement à partir de ce dépôt GitHub et est mise à jour en temps réel de façon horaire.
